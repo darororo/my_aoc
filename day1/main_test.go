@@ -29,9 +29,11 @@ func TestRotateCalc(t *testing.T) {
 	tests := []struct {
 		val, rotateBy, want int
 	}{
-		{50, 80, 30},
+		{50, 180, 30},
 		{20, -20, 0},
 		{30, -50, 80},
+		{0, -200, 0},
+		{10, -200, 10},
 	}
 
 	for _, tt := range tests {
