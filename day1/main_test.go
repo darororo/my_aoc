@@ -1,9 +1,6 @@
 package main
 
 import (
-	"bufio"
-	"log"
-	"os"
 	"testing"
 )
 
@@ -45,36 +42,43 @@ func TestRotateCalc(t *testing.T) {
 	}
 }
 
+func TestCountZeroes(t *testing.T) {
+	tests := []struct {
+		val, rotateBy, result, zeroes int
+	}{
+		{50, 180, 30, 2},
+		{20, -20, 0, 1},
+		{30, -50, 80, 1},
+		{0, -200, 0, 2},
+		{1, -200, 1, 2},
+		{10, 200, 10, 2},
+		{50, -1000, 50, 10},
+		{50, 1000, 50, 10},
+	}
+
+	for _, tt := range tests {
+		t.Run("testing case", func(t *testing.T) {
+			val, zeroes := rotateAndCountZeroes(tt.val, tt.rotateBy)
+			if val != tt.result || zeroes != tt.zeroes {
+				t.Errorf("CountZeroes(%d, %d) = (%d, %d); want (%d, %d)",
+					tt.val, tt.rotateBy, val, zeroes, tt.result, tt.zeroes)
+			}
+		})
+	}
+}
+
 func TestAnswerFromTestFile(t *testing.T) {
-	// 1. Open the file
-	file, err := os.Open("test.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close() // Ensure file is closed
-
-	// 2. Initialize the scanner
-	scanner := bufio.NewScanner(file)
-
-	answer := 0
-	total := 50 // given inital value
-
+	answer := getRotateValueFromFile("test.txt")
 	expected := 3 // Given
-
-	// 3. Iterate through lines
-	for scanner.Scan() {
-		line := scanner.Text() // Get the line as a string
-		rotateBy := parseRotateBy(line)
-
-		result := rotate(total, rotateBy)
-		if result == 0 {
-			answer = answer + 1
-		}
-		total = result
-
-	}
-
 	if answer != expected {
 		t.Errorf("Answer: %d; Expected: %d", answer, expected)
+	}
+}
+
+func TestCountAllCrossedZeroesFromFile(t *testing.T) {
+	zeroes := countZeroesFromFile("test.txt")
+	expected := 6 // Given
+	if zeroes != expected {
+		t.Errorf("Answer: %d; Expected: %d", zeroes, expected)
 	}
 }
