@@ -36,8 +36,11 @@ func ValidateID(input string) bool {
 }
 
 // Part 2
-func ValidateIDv2(input string) bool {
 
+// keep creating equal-size subsequences,
+// and check if each subseq is the same.
+// Input is not valid if it has repeating subsequences at least twice.
+func ValidateIDv2(input string) bool {
 	// contain a leading zero
 	if input[0:1] == "0" {
 		return false
