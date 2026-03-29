@@ -1,9 +1,6 @@
 package main
 
 import (
-	"bufio"
-	"log"
-	"os"
 	"testing"
 )
 
@@ -37,33 +34,47 @@ func TestValidateID(t *testing.T) {
 	}
 }
 
-func TestAnswerFromTestFile(t *testing.T) {
-	// 1. Open the file
-	file, err := os.Open("test.txt")
-	if err != nil {
-		log.Fatal(err)
+func TestValidateIDv2(t *testing.T) {
+	tests := []struct {
+		input string
+		want  bool
+	}{
+		// repeating sequence
+		{"11", false},
+		{"22", false},
+		{"999", false},
+		{"1010", false},
+		{"38593859", false},
+		{"2121212121", false},
+		{"321123", true},
+		{"998", true},
+		{"1012", true},
+		{"38593862", true},
 	}
-	defer file.Close() // Ensure file is closed
 
-	// 2. Initialize the scanner
-	scanner := bufio.NewScanner(file)
-	scanner.Split(splitOnComma())
+	for _, tt := range tests {
+		t.Run("testing case", func(t *testing.T) {
+			if got := ValidateIDv2(tt.input); got != tt.want {
+				t.Errorf("ValidateIDv2(%v) = %v, want %v", tt.input, got, tt.want)
+			}
+		})
+	}
+}
 
-	total := 0
+func TestSumRangePart1(t *testing.T) {
 
+	total := SumInvalidsFromFile("test.txt", ValidateID)
 	expected := 1227775554 // Given in AOC 2025 day 2
 
-	// 3. Iterate through lines
-	for scanner.Scan() {
-		text := scanner.Text() // Get the line as a string
-		// At EOF, we get 0 from the scanner
-		if text == "0" {
-			continue
-		}
-		low, high := ParseRange(text)
-		subTotal := AddInvalidsFromRange(low, high)
-		total = total + subTotal
+	if total != expected {
+		t.Errorf("Answer: %d; Expected: %d", total, expected)
 	}
+}
+
+func TestSumRangePart2(t *testing.T) {
+
+	total := SumInvalidsFromFile("test.txt", ValidateIDv2)
+	expected := 4174379265 // Given in AOC 2025 day 2 part 2
 
 	if total != expected {
 		t.Errorf("Answer: %d; Expected: %d", total, expected)

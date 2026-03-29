@@ -9,6 +9,9 @@ import (
 	"strings"
 )
 
+const DEBUG = false
+
+// Part One
 func ValidateID(input string) bool {
 
 	// contain a leading zero
@@ -32,11 +35,66 @@ func ValidateID(input string) bool {
 	return true
 }
 
-func AddInvalidsFromRange(low, high int) int {
+// Part 2
+func ValidateIDv2(input string) bool {
+
+	// contain a leading zero
+	if input[0:1] == "0" {
+		return false
+	}
+
+	// Check repeating pattern
+	length := len(input)
+	subLength := 1
+
+	isRepeating := false
+	for subLength < length {
+		// can't have repeating pattern
+		// if we can't create equal-size substrings
+		if length%subLength != 0 {
+			subLength++
+			continue
+		}
+
+		subSeq := input[:subLength]
+		subSeqNums := length / subLength
+
+		for i := 1; i < subSeqNums; i++ {
+			start := i * subLength
+			end := i*subLength + subLength
+			cur := input[start:end]
+
+			if DEBUG {
+				log.Printf("i=%v\n", i)
+				log.Printf("cur=%v\n", cur)
+			}
+
+			if subSeq == cur {
+				isRepeating = true
+			} else {
+				isRepeating = false
+				break
+			}
+		}
+
+		// found the repeating subsequence
+		if isRepeating {
+			break
+		}
+		// increase the substring size
+		subLength++
+	}
+
+	// Not valid if it has repeating sequences
+	return !isRepeating
+
+}
+
+func AddInvalidsFromRange(low, high int, validator func(string) bool) int {
 	sum := 0
 	for i := low; i <= high; i++ {
 		s := strconv.Itoa(i)
-		if ok := ValidateID(s); !ok {
+		if ok := validator(s); !ok {
 			sum = sum + i
 		}
 	}
@@ -78,9 +136,9 @@ func splitOnComma() func([]byte, bool) (int, []byte, error) {
 	}
 }
 
-func main() {
+func SumInvalidsFromFile(path string, validator func(string) bool) int {
 	// 1. Open the file
-	file, err := os.Open("input.txt")
+	file, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -99,10 +157,17 @@ func main() {
 
 		low, high := ParseRange(text)
 
-		invalidCounts := AddInvalidsFromRange(low, high)
+		invalidCounts := AddInvalidsFromRange(low, high, validator)
 
 		invalidTotal = invalidTotal + invalidCounts
 	}
 
-	println(invalidTotal)
+	return invalidTotal
+}
+
+func main() {
+	part1 := SumInvalidsFromFile("input.txt", ValidateID)
+	println("Part 1's Answer: %v", part1)
+	part2 := SumInvalidsFromFile("input.txt", ValidateIDv2)
+	println("Part 2's Answer: %v", part2)
 }
