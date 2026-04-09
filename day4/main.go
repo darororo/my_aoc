@@ -12,7 +12,7 @@ const DEBUG = true
 // paper roll is safe
 // if there are fewer than four rolls of paper in
 // the eight adjacent positions
-func FindGoodPapers(input string) (int, string) {
+func FindGoodPapers(input string, goodMark string) (int, string) {
 	lines := strings.Split(input, "\n")
 
 	counts := 0
@@ -91,7 +91,7 @@ func FindGoodPapers(input string) (int, string) {
 
 			// found safe paper
 			if countStars < 4 {
-				buffer.WriteString("x")
+				buffer.WriteString(goodMark)
 				counts++
 			} else {
 				buffer.WriteString("@")
@@ -111,6 +111,25 @@ func FindGoodPapers(input string) (int, string) {
 	fmt.Println(input)
 
 	return counts, marked
+}
+
+// Part 2
+// good papers are removed per iteration.
+// keep finding all the good papers.
+func FindGoodPapersRecurse(input string) (int, string) {
+	total := 0
+	output := input
+	for {
+		lastCounts, lastOutput := FindGoodPapers(output, ".")
+
+		total += lastCounts
+		output = lastOutput
+
+		if lastCounts == 0 {
+			break
+		}
+	}
+	return total, output
 }
 
 func writeStringToFile(path string, content string) {
@@ -144,10 +163,14 @@ func main() {
 	// remove last \n
 	input := strings.Clone(str[:len(str)-1])
 
-	counts, marked := FindGoodPapers(input)
-
+	// Part 1
+	counts, marked := FindGoodPapers(input, "x")
 	writeStringToFile("output.txt", marked)
+	fmt.Printf("Part 1: %v", counts)
 
-	fmt.Printf("Answers: %v", counts)
+	// Part 2
+	countRecurse, markedRecurse := FindGoodPapersRecurse(input)
+	writeStringToFile("output.txt", markedRecurse)
+	fmt.Printf("Part 2: %v", countRecurse)
 
 }
