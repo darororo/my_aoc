@@ -12,7 +12,7 @@ const DEBUG = true
 // paper roll is safe
 // if there are fewer than four rolls of paper in
 // the eight adjacent positions
-func findGoodPapers(input string) (int, string) {
+func FindGoodPapers(input string) (int, string) {
 	lines := strings.Split(input, "\n")
 
 	counts := 0
@@ -89,7 +89,7 @@ func findGoodPapers(input string) (int, string) {
 			// substract 1 because we don't count the target '@'
 			countStars := strings.Count(subStrings, "@") - 1
 
-			// fmt.Println(countStars)
+			// found safe paper
 			if countStars < 4 {
 				buffer.WriteString("x")
 				counts++
@@ -102,11 +102,15 @@ func findGoodPapers(input string) (int, string) {
 		buffer.Reset()
 	}
 
+	str := clone.String()
+	// remove \n from the last line
+	marked := str[:len(str)-1]
+
 	fmt.Println(clone.String())
 	fmt.Println()
 	fmt.Println(input)
 
-	return counts, clone.String()
+	return counts, marked
 }
 
 func writeStringToFile(path string, content string) {
@@ -140,7 +144,7 @@ func main() {
 	// remove last \n
 	input := strings.Clone(str[:len(str)-1])
 
-	counts, marked := findGoodPapers(input)
+	counts, marked := FindGoodPapers(input)
 
 	writeStringToFile("output.txt", marked)
 

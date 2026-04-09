@@ -16,18 +16,18 @@ func TestCountGoodPaperRolls(t *testing.T) {
 .@@@@@@@@.
 @.@.@@@.@.`
 
-	// 	marked := `..xx.xx@x.
-	// x@@.@.@.@@
-	// @@@@@.x.@@
-	// @.@@@@..@.
-	// x@.@@@@.@x
-	// .@@@@@@@.@
-	// .@.@.@.@@@
-	// x.@@@.@@@@
-	// .@@@@@@@@.
-	// x.x.@@@.x.`
+	expected_marked := `..xx.xx@x.
+x@@.@.@.@@
+@@@@@.x.@@
+@.@@@@..@.
+x@.@@@@.@x
+.@@@@@@@.@
+.@.@.@.@@@
+x.@@@.@@@@
+.@@@@@@@@.
+x.x.@@@.x.`
 
-	counts, _ := findGoodPapers(input)
+	counts, marked := FindGoodPapers(input)
 
 	expected := 13 // Given in AOC 2025 day 3 part 1
 
@@ -35,8 +35,8 @@ func TestCountGoodPaperRolls(t *testing.T) {
 		t.Errorf("Answer: %d; Expected: %d\n\n", counts, expected)
 	}
 
-	// if output != marked {
-	// 	t.Errorf("Answer: \n%v \nExpected: \n%v", output, marked)
-	// }
+	if marked != expected_marked {
+		t.Errorf("Answer: \n%v \nExpected: \n%v", expected_marked, marked)
+	}
 
 }
